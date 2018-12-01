@@ -129,12 +129,10 @@ bool Game::init()
         Game::setAngle();
     };
 
-    this->_eventDispatcher->addEventListenerWithSceneGraphPriority(eventListener, this);
-    this->scheduleUpdate();
-
 
     return true;
 }
+
 
 void Game::setAngle(){
 

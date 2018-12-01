@@ -41,6 +41,9 @@ public:
     virtual void update(float);
     virtual void setAngle();
 
+
+    vector<Sprite*> collisionObjects;
+
     bool up = false;
     bool down = false;
     bool right = false;
