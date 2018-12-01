@@ -22,23 +22,37 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#ifndef __HELLOWORLD_SCENE_H__
-#define __HELLOWORLD_SCENE_H__
+#ifndef __GAME_SCENE_H__
+#define __GAME_SCENE_H__
 
 #include "cocos2d.h"
+#include <vector>
+#include <algorithm>
 
-class HelloWorld : public cocos2d::Scene
+using namespace std;
+using namespace cocos2d;
+
+class Game : public Scene
 {
 public:
-    static cocos2d::Scene* createScene();
+    static Scene* createScene();
 
     virtual bool init();
-    
-    // a selector callback
-    void menuCloseCallback(cocos2d::Ref* pSender);
-    
+    virtual void update(float);
+    virtual void setAngle();
+
+    bool up = false;
+    bool down = false;
+    bool right = false;
+    bool left = false;
+
+private:
+
+    Sprite* sprite;
+
+
     // implement the "static create()" method manually
-    CREATE_FUNC(HelloWorld);
+    CREATE_FUNC(Game);
 };
 
-#endif // __HELLOWORLD_SCENE_H__
+#endif
