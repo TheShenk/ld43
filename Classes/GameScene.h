@@ -40,6 +40,9 @@ public:
     virtual bool init();
     virtual void update(float);
     virtual void setAngle();
+    virtual void createCollision();
+    virtual bool checkCollision();
+    virtual void checkMove();
 
 
     vector<Sprite*> collisionObjects;

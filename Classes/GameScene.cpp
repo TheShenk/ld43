@@ -43,6 +43,9 @@ static void problemLoading(const char* filename)
 // on "init" you need to initialize your instance
 bool Game::init()
 {
+
+    auto cam = Camera::getDefaultCamera();
+
     if ( !Scene::init() )
     {
         return false;
@@ -125,14 +128,94 @@ bool Game::init()
 
         }
 
+        this->setAngle();
 
-        Game::setAngle();
     };
+
+    this->createCollision();
+    this->_eventDispatcher->addEventListenerWithSceneGraphPriority(eventListener, this);
+    this->scheduleUpdate();
 
 
     return true;
 }
 
+void Game::createCollision(){
+    Vec2 origin = Director::getInstance()->getVisibleOrigin();
+    auto visibleSize = Director::getInstance()->getVisibleSize();
+
+    auto treeSprite = Sprite::create("tree.png");
+    treeSprite->setScale(0.1);
+    treeSprite->setPosition(Vec2(visibleSize.width/2 + origin.x-200, visibleSize.height/2 + origin.y));
+    this->addChild(treeSprite);
+
+    auto treeSprite2 = Sprite::create("tree.png");
+    treeSprite2->setScale(0.1);
+    treeSprite2->setPosition(Vec2(visibleSize.width/2 + origin.x+200, visibleSize.height/2 + origin.y-200));
+    this->addChild(treeSprite2);
+
+    collisionObjects.push_back(treeSprite);
+    collisionObjects.push_back(treeSprite2);
+
+}
+
+void Game::checkMove(){
+
+    auto beforeChangePossition = sprite->getPosition();
+
+    if (up && right){
+
+        sprite->setPosition(sprite->getPositionX()+SPEED, sprite->getPositionY()+SPEED);
+
+    }
+
+    else if (up && left){
+
+        sprite->setPosition(sprite->getPositionX()-SPEED, sprite->getPositionY()+SPEED);
+
+    }
+
+    else if (down && right){
+
+        sprite->setPosition(sprite->getPositionX()+SPEED, sprite->getPositionY()-SPEED);
+
+
+    }
+    else if (down && left){
+
+        sprite->setPosition(sprite->getPositionX()-SPEED, sprite->getPositionY()-SPEED);
+
+
+    }
+
+    else if (up){
+        sprite->setPosition(sprite->getPositionX(), sprite->getPositionY()+SPEED);
+
+    }
+
+
+    else if (down){
+        sprite->setPosition(sprite->getPositionX(), sprite->getPositionY()-SPEED);
+
+    }
+
+
+    else if (right){
+        sprite->setPosition(sprite->getPositionX()+SPEED, sprite->getPositionY());
+
+    }
+
+
+    else if (left){
+        sprite->setPosition(sprite->getPositionX()-SPEED, sprite->getPositionY());
+
+    }
+
+    if (!this->checkCollision()){
+        sprite->setPosition(beforeChangePossition);
+    }
+
+}
 
 void Game::setAngle(){
 
@@ -188,56 +271,28 @@ void Game::setAngle(){
 
 }
 
+bool oneCollisionCheck(Sprite* obj1, Sprite* obj2){
+    if(obj1->getPosition().getDistance(obj2->getPosition()) <
+        MAX(obj1->getBoundingBox().size.height, obj1->getBoundingBox().size.width)/2+
+        MAX(obj2->getBoundingBox().size.height, obj2->getBoundingBox().size.width)/2){
+        return true;
+    }
+    return false;
+}
+
+bool Game::checkCollision() {
+
+    for (int i=0; i<collisionObjects.size(); i++){
+        if (oneCollisionCheck(sprite, collisionObjects[i])){
+            return false;
+        }
+    }
+    return true;
+}
+
 void Game::update(float dt){
 
-    if (up && right){
-
-        sprite->setPosition(sprite->getPositionX()+SPEED, sprite->getPositionY()+SPEED);
-
-    }
-
-    else if (up && left){
-
-        sprite->setPosition(sprite->getPositionX()-SPEED, sprite->getPositionY()+SPEED);
-
-    }
-
-    else if (down && right){
-
-        sprite->setPosition(sprite->getPositionX()+SPEED, sprite->getPositionY()-SPEED);
-
-
-    }
-    else if (down && left){
-
-        sprite->setPosition(sprite->getPositionX()-SPEED, sprite->getPositionY()-SPEED);
-
-
-    }
-
-    else if (up){
-        sprite->setPosition(sprite->getPositionX(), sprite->getPositionY()+SPEED);
-
-    }
-
-
-    else if (down){
-        sprite->setPosition(sprite->getPositionX(), sprite->getPositionY()-SPEED);
-
-    }
-
-
-    else if (right){
-        sprite->setPosition(sprite->getPositionX()+SPEED, sprite->getPositionY());
-
-    }
-
-
-    else if (left){
-        sprite->setPosition(sprite->getPositionX()-SPEED, sprite->getPositionY());
-
-    }
-
+    this->checkMove();
 
 }
 
