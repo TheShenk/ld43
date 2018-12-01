@@ -278,9 +278,15 @@ void Game::setAngle(){
 }
 
 bool oneCollisionCheck(Node* obj1, Node* obj2){
-    if(obj1->getPosition().getDistance(obj2->getPosition()) <
-        MAX(obj1->getBoundingBox().size.height, obj1->getBoundingBox().size.width)/2+
-        MAX(obj2->getBoundingBox().size.height, obj2->getBoundingBox().size.width)/2){
+    int x1 = obj1->getPosition().x;
+    int x2 = obj2->getPosition().x;
+    int y1 = obj1->getPosition().y;
+    int y2 = obj2->getPosition().y;
+    int w1 = obj1->getBoundingBox().size.width/2;
+    int h1 = obj1->getBoundingBox().size.height/2;
+    int w2 = obj2->getBoundingBox().size.width/2;
+    int h2 = obj2->getBoundingBox().size.height/2;
+    if (abs(x2-x1) < w1 + w2 && abs(y1-y2) < h1 + h2) {
         return true;
     }
     return false;
