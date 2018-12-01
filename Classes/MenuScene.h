@@ -1,18 +1,25 @@
+//
+// Created by shenk on 01.12.18.
+//
+
+#ifndef LD43_MENUSCENE_H
+#define LD43_MENUSCENE_H
+
 /****************************************************************************
  Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
- 
+
  http://www.cocos2d-x.org
- 
+
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
  in the Software without restriction, including without limitation the rights
  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  copies of the Software, and to permit persons to whom the Software is
  furnished to do so, subject to the following conditions:
- 
+
  The above copyright notice and this permission notice shall be included in
  all copies or substantial portions of the Software.
- 
+
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -22,40 +29,31 @@
  THE SOFTWARE.
  ****************************************************************************/
 
+#ifndef __GAME_SCENE_H__
+#define __GAME_SCENE_H__
 
 #include "cocos2d.h"
-#include <vector>
-#include <algorithm>
+#include "GameScene.h"
 
 using namespace std;
 using namespace cocos2d;
 
-class Game : public Scene
+class GameMenu : public Scene
 {
 public:
     static Scene* createScene();
 
     virtual bool init();
-    virtual void update(float);
-    virtual void setAngle();
-    virtual void createCollision();
-    virtual bool checkCollision();
-    virtual void checkMove();
-
-
-    vector<Node*> collisionObjects;
-
-    bool up = false;
-    bool down = false;
-    bool right = false;
-    bool left = false;
+    virtual void firstMenuButtonTapped(Ref*);
+    virtual void secondMenuButtonTapped(Ref*);
 
 private:
 
-    Sprite* sprite;
-
-
     // implement the "static create()" method manually
-    CREATE_FUNC(Game);
+    CREATE_FUNC(GameMenu);
 };
 
+#endif
+
+
+#endif //LD43_MENUSCENE_H
