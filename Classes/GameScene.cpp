@@ -65,6 +65,7 @@ bool Game::init()
                                 origin.y + visibleSize.height - label->getContentSize().height));
 
         this->addChild(label, 1);
+        collisionObjects.push_back(label);
     }
 
     sprite = Sprite::create("man.png");
@@ -131,6 +132,9 @@ bool Game::init()
         this->setAngle();
 
     };
+
+    auto map = TMXTiledMap::create("map/out.tmx");
+    this->addChild(map, 0);
 
     this->createCollision();
     this->_eventDispatcher->addEventListenerWithSceneGraphPriority(eventListener, this);
@@ -214,6 +218,8 @@ void Game::checkMove(){
     if (!this->checkCollision()){
         sprite->setPosition(beforeChangePossition);
     }
+    Camera::getDefaultCamera()->setPosition(sprite->getPosition());
+
 
 }
 
@@ -271,7 +277,7 @@ void Game::setAngle(){
 
 }
 
-bool oneCollisionCheck(Sprite* obj1, Sprite* obj2){
+bool oneCollisionCheck(Node* obj1, Node* obj2){
     if(obj1->getPosition().getDistance(obj2->getPosition()) <
         MAX(obj1->getBoundingBox().size.height, obj1->getBoundingBox().size.width)/2+
         MAX(obj2->getBoundingBox().size.height, obj2->getBoundingBox().size.width)/2){

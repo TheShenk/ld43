@@ -45,7 +45,7 @@ public:
     virtual void checkMove();
 
 
-    vector<Sprite*> collisionObjects;
+    vector<Node*> collisionObjects;
 
     bool up = false;
     bool down = false;
