@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.1" tiledversion="1.1.1" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="64" tileheight="64" infinite="0" nextlayerid="5" nextobjectid="1">
+<map version="1.0" tiledversion="1.1.1" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="64" tileheight="64" infinite="0" nextlayerid="5" nextobjectid="1">
  <tileset firstgid="1" name="cactus_side" tilewidth="64" tileheight="64" tilecount="4" columns="2">
   <image source="../ld43/Resources/cactus_side.png" width="128" height="128"/>
  </tileset>
@@ -9,7 +9,7 @@
  <tileset firstgid="9" name="track_straight" tilewidth="64" tileheight="64" tilecount="4" columns="2">
   <image source="../ld43/Resources/track_straight.png" width="128" height="128"/>
  </tileset>
- <layer id="1" name="Земля им пухом" width="100" height="100" offsetx="-1443" offsety="-2555">
+ <layer id="1" name="dirt" width="100" height="100" offsetx="-1443" offsety="-2555">
   <data encoding="csv">
 1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,
 3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,
