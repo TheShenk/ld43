@@ -47,6 +47,7 @@ public:
     virtual ActiveObject* checkActiveCollission();
 
     virtual void checkMove();
+    Sequence* trainMove();
 
 
     vector<Node*> collisionObjects;
