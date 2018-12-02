@@ -33,6 +33,7 @@ Scene* Game::createScene()
     return Game::create();
 }
 
+
 // Print useful error message instead of segfaulting when files are not there.
 static void problemLoading(const char* filename)
 {
@@ -68,7 +69,7 @@ bool Game::init()
         collisionObjects.push_back(label);
     }
 
-    sprite = Sprite::create("man.png");
+    sprite = Sprite::create("man.png", Rect(0, 0, 35, 35));
     if (sprite == nullptr)
     {
         problemLoading("'man.png'");
@@ -101,7 +102,13 @@ bool Game::init()
             case EventKeyboard::KeyCode::KEY_LEFT_ARROW:
                 left = true;
                 break;
-
+            default:
+                log("Another button dispetcher");
+                auto nowActive = Game::checkActiveCollission();
+                if (nowActive){
+                    nowActive->activate();
+                }
+                break;
         }
 
         Game::setAngle();
@@ -133,10 +140,8 @@ bool Game::init()
 
     };
 
-    auto map = TMXTiledMap::create("map/out.tmx");
-    this->addChild(map, 0);
-
     this->createCollision();
+    this->createActive();
     this->_eventDispatcher->addEventListenerWithSceneGraphPriority(eventListener, this);
     this->scheduleUpdate();
 
@@ -279,6 +284,7 @@ void Game::setAngle(){
 
 bool oneCollisionCheck(Node* obj1, Node* obj2){
     int x1 = obj1->getPosition().x;
+    obj2->getPosition();
     int x2 = obj2->getPosition().x;
     int y1 = obj1->getPosition().y;
     int y2 = obj2->getPosition().y;
@@ -286,6 +292,9 @@ bool oneCollisionCheck(Node* obj1, Node* obj2){
     int h1 = obj1->getBoundingBox().size.height/2;
     int w2 = obj2->getBoundingBox().size.width/2;
     int h2 = obj2->getBoundingBox().size.height/2;
+
+
+
     if (abs(x2-x1) < w1 + w2 && abs(y1-y2) < h1 + h2) {
         return true;
     }
@@ -301,6 +310,39 @@ bool Game::checkCollision() {
     }
     return true;
 }
+
+void Game::createActive(){
+
+    Vec2 origin = Director::getInstance()->getVisibleOrigin();
+    auto visibleSize = Director::getInstance()->getVisibleSize();
+
+    auto leverSprite = Sprite::create("tree.png");
+    leverSprite->setScale(0.1);
+    leverSprite->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
+    auto lever = new ActiveObject();
+    lever->node = leverSprite;
+    lever->actFunc = [=](){
+        leverSprite->setColor(Color3B::BLACK);
+    };
+    this->addChild(lever->node);
+    activeObjects.push_back(lever);
+
+}
+
+ActiveObject* Game::checkActiveCollission() {
+
+
+    for (int i=0; i<activeObjects.size(); i++){
+        log("pointers is %p %p", sprite, activeObjects[i]->node);
+        if (oneCollisionCheck(sprite, activeObjects[i]->node)){
+            log("collision detected");
+            return activeObjects[i];
+        }
+    }
+    return nullptr;
+
+}
+
 
 void Game::update(float dt){
 

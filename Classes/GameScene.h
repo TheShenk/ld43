@@ -24,6 +24,7 @@
 
 
 #include "cocos2d.h"
+#include "ActiveObject.h"
 #include <vector>
 #include <algorithm>
 
@@ -38,12 +39,18 @@ public:
     virtual bool init();
     virtual void update(float);
     virtual void setAngle();
+
     virtual void createCollision();
     virtual bool checkCollision();
+
+    virtual void createActive();
+    virtual ActiveObject* checkActiveCollission();
+
     virtual void checkMove();
 
 
     vector<Node*> collisionObjects;
+    vector<ActiveObject*> activeObjects;
 
     bool up = false;
     bool down = false;
