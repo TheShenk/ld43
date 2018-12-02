@@ -81,6 +81,11 @@ bool Game::init()
         this->addChild(sprite, 0);
     }
 
+    auto train = Sprite::create("tree.png");
+    train->runAction(Game::trainMove());
+    this->addChild(train);
+    
+
     auto eventListener = EventListenerKeyboard::create();
 
     eventListener->onKeyPressed = [=](EventKeyboard::KeyCode keyCode, Event* event){
@@ -147,6 +152,15 @@ bool Game::init()
 
 
     return true;
+}
+
+Sequence* Game::trainMove() {
+    Vec2 Point1 = Vec2(100,100);
+    Vec2 Point2 = Vec2(100,200);
+    auto move1 = MoveTo::create(2, Point1);
+    auto move2 = MoveTo::create(2, Point2);
+    Sequence* seq = Sequence::create(move1, move2, nullptr);
+    return seq;
 }
 
 void Game::createCollision(){
