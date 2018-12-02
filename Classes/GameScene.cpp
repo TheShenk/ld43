@@ -321,6 +321,7 @@ void Game::createActive(){
     leverSprite->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
     auto lever = new ActiveObject();
     lever->node = leverSprite;
+
     lever->actFunc = [=](){
         leverSprite->setColor(Color3B::BLACK);
     };
@@ -333,9 +334,7 @@ ActiveObject* Game::checkActiveCollission() {
 
 
     for (int i=0; i<activeObjects.size(); i++){
-        log("pointers is %p %p", sprite, activeObjects[i]->node);
         if (oneCollisionCheck(sprite, activeObjects[i]->node)){
-            log("collision detected");
             return activeObjects[i];
         }
     }
