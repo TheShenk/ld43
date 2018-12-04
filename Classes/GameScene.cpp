@@ -26,7 +26,15 @@
 #include "SimpleAudioEngine.h"
 #include "globals.h"
 
+#include <unistd.h>
+
+
 USING_NS_CC;
+
+int leverMode = 0;
+int leverStat = 0;
+int animNum = 0;
+int inventory = 0;
 
 Scene* Game::createScene()
 {
@@ -45,7 +53,11 @@ static void problemLoading(const char* filename)
 bool Game::init()
 {
 
-    auto cam = Camera::getDefaultCamera();
+    leverMode = 0;
+    leverStat = 0;
+    animNum = 0;
+    inventory = 0;
+
 
     if ( !Scene::init() )
     {
@@ -55,21 +67,20 @@ bool Game::init()
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-    auto label = Label::createWithTTF("Hello World", "fonts/Marker Felt.ttf", 24);
-    if (label == nullptr)
-    {
-        problemLoading("'fonts/Marker Felt.ttf'");
-    }
-    else
-    {
-        label->setPosition(Vec2(origin.x + visibleSize.width/2,
-                                origin.y + visibleSize.height - label->getContentSize().height));
+    auto bg = Sprite::create("infWorld.png");
+    bg->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
+    this->addChild(bg);
 
-        this->addChild(label, 1);
-        collisionObjects.push_back(label);
-    }
+    auto grass = Sprite::create("mnogo_grass.png");
+    grass->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
+    this->addChild(grass);
 
-    sprite = Sprite::create("man.png", Rect(0, 0, 35, 35));
+    auto rails = Sprite::create("infWorldRail.png");
+    rails->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
+    rails->setScale(2);
+    this->addChild(rails);
+
+    sprite = Sprite::create("man.png");
     if (sprite == nullptr)
     {
         problemLoading("'man.png'");
@@ -81,10 +92,9 @@ bool Game::init()
         this->addChild(sprite, 0);
     }
 
-    auto train = Sprite::create("tree.png");
-    train->runAction(Game::trainMove());
+    train = Sprite::create("train_head.png");
+    train->setPosition(Vec2(0, 294));
     this->addChild(train);
-    
 
     auto eventListener = EventListenerKeyboard::create();
 
@@ -147,6 +157,12 @@ bool Game::init()
 
     this->createCollision();
     this->createActive();
+
+    inventorySprite = Sprite::create("emptyItem.png");
+    inventorySprite->setPosition(Vec2(sprite->getPositionX()+250, sprite->getPositionY()-150));
+    inventorySprite->setScale(2.5);
+    this->addChild(inventorySprite);
+
     this->_eventDispatcher->addEventListenerWithSceneGraphPriority(eventListener, this);
     this->scheduleUpdate();
 
@@ -154,31 +170,58 @@ bool Game::init()
     return true;
 }
 
-Sequence* Game::trainMove() {
-    Vec2 Point1 = Vec2(100,100);
-    Vec2 Point2 = Vec2(100,200);
-    auto move1 = MoveTo::create(2, Point1);
-    auto move2 = MoveTo::create(2, Point2);
-    Sequence* seq = Sequence::create(move1, move2, nullptr);
-    return seq;
+void Game::trainMove() {
+
+
+    switch (animNum){
+        case 0:
+            if (train->getPosition().x >= 760){
+                animNum++;
+                leverStat = leverMode;
+                log("lever stat is %d", leverStat);
+            }
+            train->setPosition(train->getPositionX()+TRAIN_SPEED, train->getPositionY());
+            break;
+        case 1:
+            if (abs(train->getRotation()) == 45){
+                animNum++;
+            }
+            if (leverStat){
+                train->setRotation(train->getRotation()-TRAIN_SPEED);
+            } else{
+                train->setRotation(train->getRotation()+TRAIN_SPEED);
+            }
+            break;
+        case 2:
+            if (abs(train->getRotation()) == 0){
+                animNum++;
+            }
+            if (leverStat){
+                train->setRotation(train->getRotation()+TRAIN_SPEED);
+                train->setPosition(train->getPositionX()+TRAIN_SPEED, train->getPositionY()+TRAIN_SPEED);
+            } else{
+                train->setRotation(train->getRotation()-1);
+                train->setPosition(train->getPositionX()+TRAIN_SPEED, train->getPositionY()-TRAIN_SPEED);
+            }
+            break;
+        case 3:
+            train->setPosition(train->getPositionX()+TRAIN_SPEED, train->getPositionY());
+    }
+
+    if (train->getPositionX() > 1000) {
+        auto director = Director::getInstance();
+        director->popScene();
+
+    }
+
 }
 
 void Game::createCollision(){
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
     auto visibleSize = Director::getInstance()->getVisibleSize();
 
-    auto treeSprite = Sprite::create("tree.png");
-    treeSprite->setScale(0.1);
-    treeSprite->setPosition(Vec2(visibleSize.width/2 + origin.x-200, visibleSize.height/2 + origin.y));
-    this->addChild(treeSprite);
+    collisionObjects.push_back(train);
 
-    auto treeSprite2 = Sprite::create("tree.png");
-    treeSprite2->setScale(0.1);
-    treeSprite2->setPosition(Vec2(visibleSize.width/2 + origin.x+200, visibleSize.height/2 + origin.y-200));
-    this->addChild(treeSprite2);
-
-    collisionObjects.push_back(treeSprite);
-    collisionObjects.push_back(treeSprite2);
 
 }
 
@@ -189,6 +232,7 @@ void Game::checkMove(){
     if (up && right){
 
         sprite->setPosition(sprite->getPositionX()+SPEED, sprite->getPositionY()+SPEED);
+
 
     }
 
@@ -237,7 +281,10 @@ void Game::checkMove(){
     if (!this->checkCollision()){
         sprite->setPosition(beforeChangePossition);
     }
+
     Camera::getDefaultCamera()->setPosition(sprite->getPosition());
+    inventorySprite->setPosition(Vec2(sprite->getPositionX()+250, sprite->getPositionY()-150));
+
 
 
 }
@@ -307,9 +354,29 @@ bool oneCollisionCheck(Node* obj1, Node* obj2){
     int w2 = obj2->getBoundingBox().size.width/2;
     int h2 = obj2->getBoundingBox().size.height/2;
 
-
+    if(obj2->getBoundingBox().size.height - 40 < 0.001) {
+        h2 /= 2;
+        y2-=10;
+    }
 
     if (abs(x2-x1) < w1 + w2 && abs(y1-y2) < h1 + h2) {
+        return true;
+    }
+    return false;
+}
+
+bool oneActiveCollisionCheck(Node* obj1, Node* obj2){
+    int x1 = obj1->getPosition().x;
+    obj2->getPosition();
+    int x2 = obj2->getPosition().x;
+    int y1 = obj1->getPosition().y;
+    int y2 = obj2->getPosition().y;
+    int w1 = obj1->getBoundingBox().size.width/2;
+    int h1 = obj1->getBoundingBox().size.height/2;
+    int w2 = obj2->getBoundingBox().size.width/2;
+    int h2 = obj2->getBoundingBox().size.height/2;
+
+    if (abs(x2-x1) < (w1 + w2+20) && abs(y1-y2) < (h1 + h2+20)) {
         return true;
     }
     return false;
@@ -330,17 +397,86 @@ void Game::createActive(){
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
     auto visibleSize = Director::getInstance()->getVisibleSize();
 
-    auto leverSprite = Sprite::create("tree.png");
-    leverSprite->setScale(0.1);
-    leverSprite->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
+    auto leverSprite = Sprite::create("lever0.png");
+    leverSprite->setScale(0.2);
+    leverSprite->setPosition(Vec2(750, 250));
     auto lever = new ActiveObject();
     lever->node = leverSprite;
 
     lever->actFunc = [=](){
-        leverSprite->setColor(Color3B::BLACK);
+        if (leverMode == 0) {
+            leverSprite->setSpriteFrame(SpriteFrame::create("lever1.png", leverSprite->getTextureRect()));
+            leverMode = 1;
+        }
+        else {
+            leverSprite->setSpriteFrame(SpriteFrame::create("lever0.png", leverSprite->getTextureRect()));
+            leverMode = 0;
+        }
     };
     this->addChild(lever->node);
     activeObjects.push_back(lever);
+
+    auto axeSprite = Sprite::create("axe.png");
+    axeSprite->setScale(3);
+    axeSprite->setPosition(Vec2(300, 450));
+    ActiveObject* axe = new ActiveObject();
+    axe->node = axeSprite;
+    axe->actFunc = [=]{
+        if (inventory == 0) {
+            inventory = 1;
+            inventorySprite->setSpriteFrame(SpriteFrame::create("axeItem.png", inventorySprite->getTextureRect()));
+            axeSprite->setVisible(false);
+        }
+    };
+    this->addChild(axeSprite);
+    activeObjects.push_back(axe);
+
+    Sprite* woodSprite;
+
+    for (int i=0; i<24; i++){
+
+        woodSprite = Sprite::create("tree5.png");
+
+        woodSprite->setPosition(Vec2(rand()%1600, rand()%1600));
+        ActiveObject* wood = new ActiveObject();
+        wood->node = woodSprite;
+        wood->actFunc = [=]{
+            if (inventory == 1) {
+                inventory = 2;
+                inventorySprite->setSpriteFrame(SpriteFrame::create("brevnoItem.png", inventorySprite->getTextureRect()));
+                woodSprite->setVisible(false);
+                collisionObjects.erase(std::remove(collisionObjects.begin(), collisionObjects.end(), woodSprite), collisionObjects.end());             }
+        };
+        this->addChild(woodSprite);
+        activeObjects.push_back(wood);
+        collisionObjects.push_back(woodSprite);
+
+        ActiveObject* trainActive = new ActiveObject();
+        trainActive->node = train;
+        trainActive->actFunc = [=]{
+            if (inventory == 2 || inventory == 3){
+                auto director = Director::getInstance();
+                director->popScene();
+            }
+        };
+
+        activeObjects.push_back(trainActive);
+
+        auto keyWoodSprite = Sprite::create("tree5.png");
+        keyWoodSprite->setPosition(Vec2(0, 0));
+        ActiveObject* keyWood = new ActiveObject();
+        keyWood->node = keyWoodSprite;
+        keyWood->actFunc = [=] {
+            inventory = 3;
+            inventorySprite->setSpriteFrame(SpriteFrame::create("keyItem.png", inventorySprite->getTextureRect()));
+        };
+
+        this->addChild(keyWoodSprite);
+        activeObjects.push_back(keyWood);
+    };
+
+
+
 
 }
 
@@ -348,7 +484,7 @@ ActiveObject* Game::checkActiveCollission() {
 
 
     for (int i=0; i<activeObjects.size(); i++){
-        if (oneCollisionCheck(sprite, activeObjects[i]->node)){
+        if (oneActiveCollisionCheck(sprite, activeObjects[i]->node)){
             return activeObjects[i];
         }
     }
@@ -360,7 +496,6 @@ ActiveObject* Game::checkActiveCollission() {
 void Game::update(float dt){
 
     this->checkMove();
+    this->trainMove();
 
 }
-
-

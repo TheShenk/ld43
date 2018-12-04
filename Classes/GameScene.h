@@ -43,11 +43,12 @@ public:
     virtual void createCollision();
     virtual bool checkCollision();
 
+
     virtual void createActive();
     virtual ActiveObject* checkActiveCollission();
 
     virtual void checkMove();
-    Sequence* trainMove();
+    virtual void trainMove();
 
 
     vector<Node*> collisionObjects;
@@ -61,6 +62,8 @@ public:
 private:
 
     Sprite* sprite;
+    Sprite* train;
+    Sprite* inventorySprite;
 
 
     // implement the "static create()" method manually

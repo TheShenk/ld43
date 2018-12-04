@@ -47,6 +47,13 @@ bool GameMenu::init()
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
+    log("%f %f", origin.x, origin.y);
+    auto sprite = Sprite::create("poezd.jpg");
+    sprite->setPosition(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y);
+    sprite->setScaleX(1.5);
+    sprite->setScaleY(1.7);
+    this->addChild(sprite);
+
     MenuItemFont::setFontSize(20);
     auto menuItemFirst = MenuItemFont::create("Start the Game", CC_CALLBACK_1(GameMenu::firstMenuButtonTapped, this));
     auto menuItemSecond = MenuItemFont::create("Options", CC_CALLBACK_1(GameMenu::secondMenuButtonTapped, this));
